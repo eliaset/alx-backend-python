@@ -5,6 +5,12 @@ from parameterized import parameterized
 from client import GithubOrgClient
 
 
+"""
+test_client.py
+
+This module contains tests for the client functionality.
+It uses unittest to verify different client behaviors.
+"""
 class TestGithubOrgClient(unittest.TestCase):
     """Unit tests for GithubOrgClient."""
 
@@ -80,6 +86,7 @@ class TestGithubOrgClient(unittest.TestCase):
         """Test GithubOrgClient.has_license returns correct boolean."""
         client = GithubOrgClient("google")
         self.assertEqual(client.has_license(repo, license_key), expected)
+
 
     # ------------------------
     # 8. Integration test: fixtures and 9. Integration tests
