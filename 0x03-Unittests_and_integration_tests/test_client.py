@@ -1,17 +1,13 @@
 #!/usr/bin/env python3
-"""Tests for client module (Tasks 4 & 5)."""
-
 import unittest
 from unittest.mock import patch, PropertyMock
 from parameterized import parameterized
 from client import GithubOrgClient
-from fixtures import org_payload
 
 
 class TestGithubOrgClient(unittest.TestCase):
     """Unit tests for GithubOrgClient."""
 
-    # ---------- Task 4: Parameterize and patch as decorators ----------
     @parameterized.expand([
         ("google",),
         ("abc",),
