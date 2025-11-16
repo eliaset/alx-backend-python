@@ -53,13 +53,18 @@ class TestGithubOrgClient(unittest.TestCase):
         ]
         mock_get_json.return_value = repos_payload
 
-        with patch("client.GithubOrgClient._public_repos_url", new_callable=PropertyMock) as mock_url:
+        with patch(
+            "client.GithubOrgClient._public_repos_url",
+            new_callable=PropertyMock
+        ) as mock_url:
             mock_url.return_value = "http://example.com/repos"
             client = GithubOrgClient("google")
-            self.assertEqual(client.public_repos(), ["repo1", "repo2", "repo3"])
+            self.assertEqual(
+                client.public_repos(),
+                ["repo1", "repo2", "repo3"]
+            )
             mock_url.assert_called_once()
             mock_get_json.assert_called_once_with("http://example.com/repos")
-
     # ------------------------
     # Task 7: Parameterize
     # ------------------------
