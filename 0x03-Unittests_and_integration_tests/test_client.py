@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
-"""Unit tests for GithubOrgClient - Tasks 4 to 9."""
-
 import unittest
-from unittest.mock import patch, PropertyMock, Mock
-from parameterized import parameterized, parameterized_class
+from unittest.mock import patch, PropertyMock
+from parameterized import parameterized
 from client import GithubOrgClient
-from fixtures import org_payload, repos_payload, expected_repos, apache2_repos
 
 
 class TestGithubOrgClient(unittest.TestCase):
@@ -50,12 +47,12 @@ class TestGithubOrgClient(unittest.TestCase):
     @patch("client.get_json")
     def test_public_repos(self, mock_get_json):
         """Test GithubOrgClient.public_repos returns list of repo names."""
-        repos_payload_local = [
+        repos_payload = [
             {"name": "repo1"},
             {"name": "repo2"},
             {"name": "repo3"},
         ]
-        mock_get_json.return_value = repos_payload_local
+        mock_get_json.return_value = repos_payload
 
         with patch(
             "client.GithubOrgClient._public_repos_url",
@@ -83,12 +80,9 @@ class TestGithubOrgClient(unittest.TestCase):
         """Test GithubOrgClient.has_license returns correct boolean."""
         client = GithubOrgClient("google")
         self.assertEqual(client.has_license(repo, license_key), expected)
+    
 
-
-# ------------------------
-# Tasks 8 & 9: Integration tests
-# ------------------------
-@parameterized_class([
+    @parameterized_class([
     {
         "org_payload": org_payload,
         "repos_payload": repos_payload,
