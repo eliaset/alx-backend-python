@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
-"""Unit tests for GithubOrgClient - Tasks 4, 5, 6, 7"""
+"""Unit and integration tests for GithubOrgClient - Tasks 4-9."""
 
 import unittest
-from unittest.mock import patch, PropertyMock
-from parameterized import parameterized
+from unittest.mock import patch, PropertyMock, Mock
+from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
+from fixtures import org_payload, repos_payload, expected_repos, apache2_repos
 
 
+# ------------------------
+# Tasks 4-7: Unit tests
+# ------------------------
 class TestGithubOrgClient(unittest.TestCase):
     """Unit tests for GithubOrgClient."""
 
-    # ------------------------
     # Task 4: Parameterize and patch as decorators
-    # ------------------------
     @parameterized.expand([
         ("google",),
         ("abc",),
@@ -29,9 +31,7 @@ class TestGithubOrgClient(unittest.TestCase):
             f"https://api.github.com/orgs/{org_name}"
         )
 
-    # ------------------------
     # Task 5: Mocking a property
-    # ------------------------
     def test_public_repos_url(self):
         """Test GithubOrgClient._public_repos_url returns correct URL."""
         payload = {"repos_url": "http://example.com/repos"}
@@ -43,18 +43,16 @@ class TestGithubOrgClient(unittest.TestCase):
             client = GithubOrgClient("google")
             self.assertEqual(client._public_repos_url, payload["repos_url"])
 
-    # ------------------------
     # Task 6: More patching
-    # ------------------------
     @patch("client.get_json")
     def test_public_repos(self, mock_get_json):
         """Test GithubOrgClient.public_repos returns list of repo names."""
-        repos_payload = [
+        repos_payload_mock = [
             {"name": "repo1"},
             {"name": "repo2"},
             {"name": "repo3"},
         ]
-        mock_get_json.return_value = repos_payload
+        mock_get_json.return_value = repos_payload_mock
 
         with patch(
             "client.GithubOrgClient._public_repos_url",
@@ -71,9 +69,7 @@ class TestGithubOrgClient(unittest.TestCase):
                 "http://example.com/repos"
             )
 
-    # ------------------------
     # Task 7: Parameterize
-    # ------------------------
     @parameterized.expand([
         ({"license": {"key": "my_license"}}, "my_license", True),
         ({"license": {"key": "other"}}, "my_license", False),
@@ -82,4 +78,46 @@ class TestGithubOrgClient(unittest.TestCase):
         """Test GithubOrgClient.has_license returns correct boolean."""
         client = GithubOrgClient("google")
         self.assertEqual(client.has_license(repo, license_key), expected)
-    
+
+
+# ------------------------
+# Tasks 8-9: Integration tests
+# ------------------------
+@parameterized_class([
+    {
+        "org_payload": org_payload,
+        "repos_payload": repos_payload,
+        "expected_repos": expected_repos,
+        "apache2_repos": apache2_repos,
+    }
+])
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """Integration tests for GithubOrgClient."""
+
+    @classmethod
+    def setUpClass(cls):
+        """Set up requests.get patcher with fixture payloads."""
+        cls.get_patcher = patch("requests.get")
+        mock_get = cls.get_patcher.start()
+        mock_get.side_effect = [
+            Mock(json=lambda: cls.org_payload),
+            Mock(json=lambda: cls.repos_payload),
+        ]
+
+    @classmethod
+    def tearDownClass(cls):
+        """Stop patcher."""
+        cls.get_patcher.stop()
+
+    def test_public_repos(self):
+        """Test public_repos returns expected repos."""
+        client = GithubOrgClient("google")
+        self.assertEqual(client.public_repos(), self.expected_repos)
+
+    def test_public_repos_with_license(self):
+        """Test public_repos returns repos filtered by license."""
+        client = GithubOrgClient("google")
+        self.assertEqual(
+            client.public_repos("apache-2.0"),
+            self.apache2_repos
+        )
