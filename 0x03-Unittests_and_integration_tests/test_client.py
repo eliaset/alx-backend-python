@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Unit tests for GithubOrgClient - Task 4 & 5"""
+"""Unit tests for GithubOrgClient - Tasks 4, 5, 6, 7"""
 
 import unittest
 from unittest.mock import patch, PropertyMock
@@ -10,7 +10,9 @@ from client import GithubOrgClient
 class TestGithubOrgClient(unittest.TestCase):
     """Unit tests for GithubOrgClient."""
 
-
+    # ------------------------
+    # Task 4: Parameterize and patch as decorators
+    # ------------------------
     @parameterized.expand([
         ("google",),
         ("abc",),
@@ -27,7 +29,9 @@ class TestGithubOrgClient(unittest.TestCase):
             f"https://api.github.com/orgs/{org_name}"
         )
 
-
+    # ------------------------
+    # Task 5: Mocking a property
+    # ------------------------
     def test_public_repos_url(self):
         """Test GithubOrgClient._public_repos_url returns correct URL."""
         payload = {"repos_url": "http://example.com/repos"}
@@ -35,3 +39,35 @@ class TestGithubOrgClient(unittest.TestCase):
             mock_org.return_value = payload
             client = GithubOrgClient("google")
             self.assertEqual(client._public_repos_url, payload["repos_url"])
+
+    # ------------------------
+    # Task 6: More patching
+    # ------------------------
+    @patch("client.get_json")
+    def test_public_repos(self, mock_get_json):
+        """Test GithubOrgClient.public_repos returns list of repo names."""
+        repos_payload = [
+            {"name": "repo1"},
+            {"name": "repo2"},
+            {"name": "repo3"},
+        ]
+        mock_get_json.return_value = repos_payload
+
+        with patch("client.GithubOrgClient._public_repos_url", new_callable=PropertyMock) as mock_url:
+            mock_url.return_value = "http://example.com/repos"
+            client = GithubOrgClient("google")
+            self.assertEqual(client.public_repos(), ["repo1", "repo2", "repo3"])
+            mock_url.assert_called_once()
+            mock_get_json.assert_called_once_with("http://example.com/repos")
+
+    # ------------------------
+    # Task 7: Parameterize
+    # ------------------------
+    @parameterized.expand([
+        ({"license": {"key": "my_license"}}, "my_license", True),
+        ({"license": {"key": "other"}}, "my_license", False),
+    ])
+    def test_has_license(self, repo, license_key, expected):
+        """Test GithubOrgClient.has_license returns correct boolean."""
+        client = GithubOrgClient("google")
+        self.assertEqual(client.has_license(repo, license_key), expected)
