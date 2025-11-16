@@ -3,6 +3,7 @@ import unittest
 from unittest.mock import patch
 from parameterized import parameterized
 from client import GithubOrgClient
+from fixtures import org_payload
 
 
 class TestGithubOrgClient(unittest.TestCase):
