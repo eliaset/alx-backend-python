@@ -80,8 +80,10 @@ class TestGithubOrgClient(unittest.TestCase):
         """Test GithubOrgClient.has_license returns correct boolean."""
         client = GithubOrgClient("google")
         self.assertEqual(client.has_license(repo, license_key), expected)
-   
 
+    # ------------------------
+    # 8. Integration test: fixtures and 9. Integration tests
+    # ------------------------
 class TestIntegrationGithubOrgClient(unittest.TestCase):
     """Integration tests for GithubOrgClient."""
 
@@ -111,5 +113,4 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         self.assertEqual(
             client.public_repos("apache-2.0"),
             self.apache2_repos
-            
         )
