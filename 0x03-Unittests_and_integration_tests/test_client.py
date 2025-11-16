@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Unit tests for GithubOrgClient"""
+
 import unittest
 from unittest.mock import patch, PropertyMock
 from parameterized import parameterized
