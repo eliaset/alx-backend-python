@@ -64,7 +64,10 @@ class TestGithubOrgClient(unittest.TestCase):
                 ["repo1", "repo2", "repo3"]
             )
             mock_url.assert_called_once()
-            mock_get_json.assert_called_once_with("http://example.com/repos")
+            mock_get_json.assert_called_once_with(
+                "http://example.com/repos"
+            )
+
     # ------------------------
     # Task 7: Parameterize
     # ------------------------
