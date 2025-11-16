@@ -1,25 +1,29 @@
 #!/usr/bin/env python3
+"""Tests for client module (Tasks 4 & 5)."""
+
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, PropertyMock
 from parameterized import parameterized
 from client import GithubOrgClient
 from fixtures import org_payload
 
 
 class TestGithubOrgClient(unittest.TestCase):
-    """Tests for GithubOrgClient.org"""
+    """Unit tests for GithubOrgClient."""
 
+    # ---------- Task 4: Parameterize and patch as decorators ----------
     @parameterized.expand([
         ("google",),
-        ("abc",)
+        ("abc",),
     ])
-    @patch('client.get_json')
+    @patch("client.get_json")
     def test_org(self, org_name, mock_get_json):
-        """Test that GithubOrgClient.org returns correct JSON"""
-        mock_get_json.return_value = {"payload": True}
+        """Test GithubOrgClient.org returns correct value."""
+        expected = {"org": org_name}
+        mock_get_json.return_value = expected
 
         client = GithubOrgClient(org_name)
-        result = client.org
-
-        mock_get_json.assert_called_once_with(f"https://api.github.com/orgs/{org_name}")
-        self.assertEqual(result, {"payload": True})
+        self.assertEqual(client.org, expected)
+        mock_get_json.assert_called_once_with(
+            f"https://api.github.com/orgs/{org_name}"
+        )
