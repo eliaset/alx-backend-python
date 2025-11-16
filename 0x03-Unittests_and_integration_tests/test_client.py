@@ -5,12 +5,6 @@ from parameterized import parameterized
 from client import GithubOrgClient
 
 
-"""
-test_client.py
-
-This module contains tests for the client functionality.
-It uses unittest to verify different client behaviors.
-"""
 class TestGithubOrgClient(unittest.TestCase):
     """Unit tests for GithubOrgClient."""
 
@@ -89,8 +83,16 @@ class TestGithubOrgClient(unittest.TestCase):
 
 
     # ------------------------
-    # 8. Integration test: fixtures and 9. Integration tests
+    # Tasks 8-9: Integration tests
     # ------------------------
+    @parameterized_class([
+        {
+            "org_payload": org_payload,
+            "repos_payload": repos_payload,
+            "expected_repos": expected_repos,
+            "apache2_repos": apache2_repos,
+        }
+    ])
 class TestIntegrationGithubOrgClient(unittest.TestCase):
     """Integration tests for GithubOrgClient."""
 
