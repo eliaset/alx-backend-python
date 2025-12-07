@@ -14,5 +14,5 @@ COPY . .
 # Expose Django default port
 EXPOSE 8000
 
-# Run the Django app
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Run the Django app using python3 (ALX checker expects python3)
+CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
